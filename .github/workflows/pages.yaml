@@ -1,0 +1,57 @@
+# GitHub Actions workflow file.
+#
+# For more information, visit
+# https://docs.github.com/actions/learn-github-actions.
+
+---
+name: pages
+
+# Makes workflow run on push to the main branch.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      debug:
+        default: false
+        description: Use Tmate session for debugging
+        type: boolean
+
+env:
+  DENO_DIR: "${{ github.workspace }}/.cache/deno"
+
+jobs:
+  docs:
+    name: Build and publish documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Cache packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache
+            node_modules
+          key: >-
+            deno_${{ runner.os }}-${{ hashFiles('deno.lock') }}
+      - name: Install Just
+        uses: extractions/setup-just@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Install development dependencies
+        run: just setup
+      - name: Build documentation
+        run: just build
+      - name: Publish documentation
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: public
+      - name: Setup Tmate session if debug enabled
+        if: >-
+          ${{ always() && github.event_name == 'workflow_dispatch' &&
+          inputs.debug }}
+        timeout-minutes: 60
+        uses: mxschmitt/action-tmate@v3
