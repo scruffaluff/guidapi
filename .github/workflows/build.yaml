@@ -1,0 +1,66 @@
+# GitHub Actions workflow file.
+#
+# For more information, visit
+# https://docs.github.com/actions/learn-github-actions.
+
+---
+name: build
+
+# Makes workflow run on any push or pull request.
+on:
+  pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+    inputs:
+      debug:
+        default: false
+        description: Use Tmate session for debugging
+        type: boolean
+
+env:
+  DENO_DIR: "${{ github.workspace }}/.cache/deno"
+
+jobs:
+  build:
+    name: Run code analyses and test suites
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos
+          - ubuntu
+          - windows
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Cache packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache
+            node_modules
+          key: >-
+            deno_${{ runner.os }}-${{ hashFiles('deno.lock') }}
+      - if: ${{ runner.os == 'Windows' }}
+        name: Install Just for Windows
+        run: choco install --yes just
+      - if: ${{ runner.os != 'Windows' }}
+        name: Install Just for Unix
+        run: >-
+          curl -LSfs https://just.systems/install.sh | sh -s -- --to
+          /usr/local/bin
+      - name: Check code formatting
+        run: just format
+      - name: Build documentation
+        run: just build
+      - name: Setup Tmate session if debug enabled
+        if: >-
+          ${{ always() && github.event_name == 'workflow_dispatch' &&
+          inputs.debug }}
+        timeout-minutes: 60
+        uses: mxschmitt/action-tmate@v3

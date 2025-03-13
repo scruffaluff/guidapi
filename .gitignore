@@ -1,0 +1,16 @@
+# Git configuration file for ignoring untracked paths.
+#
+# For more information, visit https://git-scm.com/docs/gitignore.
+
+.cache/
+.DS_Store
+.pnpm-store/
+.vitepress/.temp/
+.vitepress/cache/
+.vitepress/dist/
+*.tar.gz
+*.zip
+node_modules/
+public/
+site/
+tmp/
