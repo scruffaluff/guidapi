@@ -46,14 +46,10 @@ jobs:
             node_modules
           key: >-
             deno_${{ runner.os }}-${{ hashFiles('deno.lock') }}
-      - if: ${{ runner.os == 'Windows' }}
-        name: Install Just for Windows
-        run: choco install --yes just
-      - if: ${{ runner.os != 'Windows' }}
-        name: Install Just for Unix
-        run: >-
-          curl -LSfs https://just.systems/install.sh | sh -s -- --to
-          /usr/local/bin
+      - name: Install Just
+        uses: extractions/setup-just@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Check code formatting
         run: just format
       - name: Run code analyses
