@@ -20,9 +20,9 @@ export async function fetchSample(uri: URL): Promise<Float32Array> {
 }
 
 function getPlotSize(): Size {
-  const width = Math.min(720, window.innerWidth - 100);
+  const width = Math.min(720, globalThis.innerWidth - 100);
   return {
-    width: Math.min(720, window.innerWidth),
+    width: Math.min(720, globalThis.innerWidth),
     height: Math.floor(0.6 * width),
   };
 }
@@ -90,7 +90,7 @@ export function plotSample(
 
   const indices = [...Array(sample.length).keys()];
   const plot = new uPlot({ ...base, ...options }, [indices, sample], container);
-  window.addEventListener("resize", (e) => {
+  globalThis.addEventListener("resize", (_) => {
     plot.setSize(getPlotSize());
   });
 

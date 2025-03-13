@@ -2,9 +2,16 @@
 #
 # For more information, visit https://just.systems.
 
+set script-interpreter := ["nu"]
 set shell := ["nu", "--commands"]
+set unstable := true
 set windows-shell := ["nu", "--commands"]
-export PATH := home_dir() / ".local/bin:" + env_var("PATH")
+export PATH := if os() == "windows" {
+  env_var("LocalAppData") / "Deno;" + env_var("LocalAppData") / "Nushell;" 
+  + env_var("Path")
+} else {
+  home_dir() / ".local/bin:" + env_var("PATH")
+}
 
 # List all commands available in justfile.
 list:
@@ -24,13 +31,17 @@ dev *flags:
 format:
   deno run --allow-all npm:prettier --check .
 
+# Run code analyses.
+lint:
+  deno lint .
+
 # Serve built website.
 serve *flags: build
   deno run --allow-all npm:vitepress serve . {{flags}}
 
 # Install development dependencies.
+[script]
 setup: _setup-nushell
-  #!/usr/bin/env nu
   if (which deno | is-empty) {
     let arch = $nu.os-info | get arch
     let os = $nu.os-info | get name
@@ -39,13 +50,18 @@ setup: _setup-nushell
       "macos" => $"($arch)-apple-darwin"
       "windows" => $"($arch)-pc-windows-msvc"
     }
-    let dst_dir = $"($env.HOME)/.local/bin"
+    let bin_name = if $os == "windows" { "deno.exe" } else { "deno" }
+    let dst_dir = if $os == "windows" {
+      $"($env.LocalAppdata)/Deno"
+    } else {
+      $"($env.HOME)/.local/bin"
+    }
     mkdir $dst_dir
     let tmp_dir = mktemp --directory
     http get $"https://github.com/denoland/deno/releases/latest/download/deno-($target).zip"
     | save $"($tmp_dir)/deno.zip"
     unzip -d $tmp_dir $"($tmp_dir)/deno.zip"
-    mv $"($tmp_dir)/deno" $"($dst_dir)/deno" 
+    mv $"($tmp_dir)/($bin_name)" $"($dst_dir)/($bin_name)" 
   }
   deno --version
   deno install --frozen
@@ -56,7 +72,7 @@ _setup-nushell:
   set -eu
   if [ ! -x "$(command -v nu)" ]; then
     curl -LSfs \
-      https://raw.githubusercontent.com/scruffaluff/shell-scripts/main/src/install-nushell.sh |
+      https://raw.githubusercontent.com/scruffaluff/shell-scripts/main/scripts/install-nushell.sh |
       sh -s -- --user
   fi
   echo "Nushell $(nu --version)"
@@ -69,7 +85,7 @@ _setup-nushell:
   $PSNativeCommandUseErrorActionPreference = $True
   If (-Not (Get-Command -ErrorAction SilentlyContinue nu)) {
     powershell { 
-      iex "& { $(iwr -useb https://raw.githubusercontent.com/scruffaluff/shell-scripts/main/src/install-nushell.ps1) } --user"
+      iex "& { $(iwr -useb https://raw.githubusercontent.com/scruffaluff/shell-scripts/main/scripts/install-nushell.ps1) } --user"
     }
   }
   Write-Output "Nushell $(nu --version)"
