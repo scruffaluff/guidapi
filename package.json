@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@antonz/codapi": "^0.19.10",
     "@fontsource/fira-code": "^5.2.5",
     "@fontsource/fira-sans": "^5.2.5",
     "@vueuse/motion": "^3.0.3",

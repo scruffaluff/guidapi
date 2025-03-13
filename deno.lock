@@ -1,6 +1,7 @@
 {
   "version": "4",
   "specifiers": {
+    "npm:@antonz/codapi@~0.19.10": "0.19.10",
     "npm:@fontsource/fira-code@^5.2.5": "5.2.5",
     "npm:@fontsource/fira-sans@^5.2.5": "5.2.5",
     "npm:@types/node@^22.13.10": "22.13.10",
@@ -152,6 +153,9 @@
         "@jridgewell/gen-mapping",
         "@jridgewell/trace-mapping"
       ]
+    },
+    "@antonz/codapi@0.19.10": {
+      "integrity": "sha512-NZzxyU5vNQPK6wlv6Cc6QnCGCQgIYfidQZb3QyAU96IuVc5nJWa0Izgnd2c3/MrFf6j1syCGDFCiDxTEUwY8Iw=="
     },
     "@apideck/better-ajv-errors@0.3.6_ajv@8.17.1": {
       "integrity": "sha512-P+ZygBLZtkp0qqOAJJVX4oX/sFo5JR3eBWwwuqHHhK0GIgQOKWrAfiAaWX0aArHkRWHMuggFEgAZNxVPwPZYaA==",
@@ -4181,6 +4185,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@antonz/codapi@~0.19.10",
         "npm:@fontsource/fira-code@^5.2.5",
         "npm:@fontsource/fira-sans@^5.2.5",
         "npm:@types/node@^22.13.10",

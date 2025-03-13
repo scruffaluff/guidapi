@@ -1,3 +1,4 @@
+import type { Theme } from "vitepress";
 import "@fontsource/fira-code/300.css";
 import "@fontsource/fira-code/400.css";
 import "@fontsource/fira-code/500.css";
@@ -22,8 +23,14 @@ import "@fontsource/fira-sans/700-italic.css";
 import "@fontsource/fira-sans/800-italic.css";
 import "@fontsource/fira-sans/900-italic.css";
 import DefaultTheme from "vitepress/theme-without-fonts";
-import "./style.css";
+import "@antonz/codapi/dist/snippet.css";
+import "./index.css";
 
 export default {
+  enhanceApp() {
+    if (!import.meta.env.SSR) {
+      import("@antonz/codapi/dist/snippet.js");
+    }
+  },
   extends: DefaultTheme,
-};
+} satisfies Theme;
