@@ -50,16 +50,8 @@ jobs:
         uses: extractions/setup-just@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - if: ${{ runner.os == 'Windows' }}
-        name: Show system details
-        run: |
-          Write-Output "Path: $Env:Path"
-          nu --version
-      - if: ${{ runner.os != 'Windows' }}
-        name: Show system details
-        run: |
-          echo "Path: ${PATH}"
-          nu --version
+      - name: Install development dependencies
+        run: just setup
       - name: Check code formatting
         run: just format
       - name: Run code analyses
